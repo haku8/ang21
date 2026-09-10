@@ -148,21 +148,6 @@ mutation {
 
 ---
 
-## ✨ Features
-
-| Feature | Beschreibung |
-|---|---|
-| 📋 Übersichtstabelle | Sortierbar, paginiert, mit Volltextsuche |
-| ➕ Erstellen | Dialog mit Reactive Form + Validierung |
-| ✏️ Bearbeiten | Felder vorausgefüllt, nur geänderte Felder werden gesendet |
-| 🗑 Löschen | Bestätigungsdialog vor dem Löschen |
-| 🔔 Feedback | Snackbar-Benachrichtigungen bei Erfolg/Fehler |
-| 📱 Responsive | Mobile-optimiertes Layout |
-
----
-
-## 🔧 Konfiguration
-
 ### Backend API URL ändern (frontend)
 
 In `src/app/app.config.ts`:
@@ -170,13 +155,3 @@ In `src/app/app.config.ts`:
 ```typescript
 link: httpLink.create({ uri: 'http://IHR-SERVER:4000/graphql' }),
 ```
-
-### Felder erweitern
-
-1. **Backend** – `src/schema.js`: Felder zu `Item` type und Mutations hinzufügen  
-2. **Backend** – `src/resolvers.js`: SQL-Queries anpassen  
-3. **Backend** – `src/db.js`: `CREATE TABLE` um Spalte erweitern  
-4. **Frontend** – `models/item.model.ts`: Interface erweitern  
-5. **Frontend** – `graphql/item.graphql.ts`: Queries/Mutations erweitern  
-6. **Frontend** – `item-form.component.html/.ts`: Formularfeld hinzufügen  
-7. **Frontend** – `item-list.component.html/.ts`: Tabellenspalte hinzufügen  
