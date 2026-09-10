@@ -1,0 +1,46 @@
+<h2 mat-dialog-title class="dialog-title">
+  <mat-icon>{{ isEdit ? 'edit' : 'add_circle' }}</mat-icon>
+  {{ isEdit ? 'Eintrag bearbeiten' : 'Neuer Eintrag' }}
+</h2>
+
+<mat-dialog-content class="dialog-content">
+  <form [formGroup]="form" class="item-form">
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Name</mat-label>
+      <input matInput formControlName="name" placeholder="Name eingeben" autocomplete="off" />
+      <mat-icon matSuffix>label</mat-icon>
+      @if (form.get('name')?.hasError('required') && form.get('name')?.touched) {
+        <mat-error>Name ist erforderlich</mat-error>
+      }
+      @if (form.get('name')?.hasError('maxlength')) {
+        <mat-error>Maximal 255 Zeichen</mat-error>
+      }
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Text 1</mat-label>
+      <textarea matInput formControlName="text1" rows="3"
+                placeholder="Beliebiger Text..."></textarea>
+      <mat-icon matSuffix>notes</mat-icon>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Text 2</mat-label>
+      <textarea matInput formControlName="text2" rows="3"
+                placeholder="Beliebiger Text..."></textarea>
+      <mat-icon matSuffix>notes</mat-icon>
+    </mat-form-field>
+
+  </form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end" class="dialog-actions">
+  <button mat-stroked-button (click)="onCancel()">
+    <mat-icon>close</mat-icon> Abbrechen
+  </button>
+  <button mat-flat-button color="primary" (click)="onSubmit()" [disabled]="form.invalid">
+    <mat-icon>{{ isEdit ? 'save' : 'add' }}</mat-icon>
+    {{ isEdit ? 'Speichern' : 'Erstellen' }}
+  </button>
+</mat-dialog-actions>

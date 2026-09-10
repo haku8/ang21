@@ -1,0 +1,112 @@
+<div class="page-wrapper">
+
+  <!-- Toolbar -->
+  <mat-toolbar class="app-toolbar" color="primary">
+    <mat-icon class="toolbar-icon">dataset</mat-icon>
+    <span class="toolbar-title">Datenverwaltung</span>
+    <span class="spacer"></span>
+    <mat-chip class="count-chip">{{ totalCount }} Einträge</mat-chip>
+    <button mat-flat-button class="new-btn" (click)="openCreate()">
+      <mat-icon>add</mat-icon> Neu
+    </button>
+  </mat-toolbar>
+
+  <!-- Content -->
+  <div class="content">
+
+    <!-- Filter -->
+    <div class="filter-row">
+      <mat-form-field appearance="outline" class="search-field">
+        <mat-label>Suchen…</mat-label>
+        <input matInput (keyup)="applyFilter($event)" placeholder="Name, Text…" />
+        <mat-icon matSuffix>search</mat-icon>
+      </mat-form-field>
+    </div>
+
+    <!-- Loading -->
+    @if (loading) {
+      <div class="loading-center">
+        <mat-spinner diameter="48"></mat-spinner>
+        <p>Daten werden geladen…</p>
+      </div>
+    }
+
+    <!-- Table -->
+    @if (!loading) {
+      <div class="table-container mat-elevation-z2">
+        <table mat-table [dataSource]="dataSource" matSort class="data-table">
+
+          <!-- Name -->
+          <ng-container matColumnDef="name">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Name</th>
+            <td mat-cell *matCellDef="let row">
+              <span class="name-cell">{{ row.name }}</span>
+            </td>
+          </ng-container>
+
+          <!-- Text 1 -->
+          <ng-container matColumnDef="text1">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Text 1</th>
+            <td mat-cell *matCellDef="let row">
+              <span class="text-cell" [matTooltip]="row.text1 || ''">
+                {{ truncate(row.text1) }}
+              </span>
+            </td>
+          </ng-container>
+
+          <!-- Text 2 -->
+          <ng-container matColumnDef="text2">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Text 2</th>
+            <td mat-cell *matCellDef="let row">
+              <span class="text-cell" [matTooltip]="row.text2 || ''">
+                {{ truncate(row.text2) }}
+              </span>
+            </td>
+          </ng-container>
+
+          <!-- Updated -->
+          <ng-container matColumnDef="updatedAt">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Geändert</th>
+            <td mat-cell *matCellDef="let row">
+              <span class="date-cell">{{ formatDate(row.updatedAt) }}</span>
+            </td>
+          </ng-container>
+
+          <!-- Actions -->
+          <ng-container matColumnDef="actions">
+            <th mat-header-cell *matHeaderCellDef class="actions-header">Aktionen</th>
+            <td mat-cell *matCellDef="let row" class="actions-cell">
+              <button mat-icon-button color="primary"
+                      matTooltip="Bearbeiten"
+                      (click)="openEdit(row)">
+                <mat-icon>edit</mat-icon>
+              </button>
+              <button mat-icon-button color="warn"
+                      matTooltip="Löschen"
+                      (click)="confirmDelete(row)">
+                <mat-icon>delete</mat-icon>
+              </button>
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns;"
+              class="data-row"></tr>
+
+          <!-- Empty state -->
+          <tr class="mat-row" *matNoDataRow>
+            <td class="mat-cell no-data" [attr.colspan]="displayedColumns.length">
+              <mat-icon>inbox</mat-icon>
+              <span>Keine Einträge gefunden</span>
+            </td>
+          </tr>
+        </table>
+
+        <mat-paginator [pageSizeOptions]="[10, 25, 50]"
+                       pageSize="10"
+                       showFirstLastButtons>
+        </mat-paginator>
+      </div>
+    }
+  </div>
+</div>
