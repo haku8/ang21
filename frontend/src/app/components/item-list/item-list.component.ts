@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild, computed, effect, Signal } from '@angular/core';
 
 import { MatTableModule, MatTableDataSource } from '@angular/material/table';
 import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
@@ -43,8 +43,9 @@ import { ConfirmDialogComponent } from '../confirm-dialog/confirm-dialog.compone
 export class ItemListComponent implements OnInit {
   displayedColumns = ['name', 'text1', 'text2', 'updatedAt', 'actions'];
   dataSource = new MatTableDataSource<Item>();
-  loading = true;
-  totalCount = 0;
+  readonly loading: Signal<boolean>;
+  readonly totalCount: Signal<number>;
+  readonly error: Signal<string | null>;
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
@@ -53,28 +54,32 @@ export class ItemListComponent implements OnInit {
     private itemService: ItemService,
     private dialog: MatDialog,
     private snackBar: MatSnackBar
-  ) {}
+  ) {
+    this.loading = this.itemService.loadingSignal;
+    this.totalCount = this.itemService.totalCount;
+    this.error = this.itemService.errorSignal;
 
-  ngOnInit(): void {
-    this.loadItems();
+    effect(() => {
+      const items = this.itemService.itemsSignal();
+      this.dataSource.data = items;
+      if (this.paginator) {
+        this.dataSource.paginator = this.paginator;
+      }
+      if (this.sort) {
+        this.dataSource.sort = this.sort;
+      }
+    });
+
+    effect(() => {
+      const error = this.itemService.errorSignal();
+      if (error) {
+        this.snackBar.open(error, 'OK', { duration: 4000, panelClass: 'snack-error' });
+      }
+    });
   }
 
-  loadItems(): void {
-    this.loading = true;
-    this.itemService.getItems().subscribe({
-      next: items => {
-        this.dataSource.data = items;
-        this.totalCount = items.length;
-        this.dataSource.paginator = this.paginator;
-        this.dataSource.sort = this.sort;
-        this.loading = false;
-      },
-      error: err => {
-        console.error(err);
-        this.snackBar.open('Fehler beim Laden der Daten', 'OK', { duration: 4000, panelClass: 'snack-error' });
-        this.loading = false;
-      },
-    });
+  ngOnInit(): void {
+    this.itemService.loadItems();
   }
 
   applyFilter(event: Event): void {
@@ -91,7 +96,10 @@ export class ItemListComponent implements OnInit {
     ref.afterClosed().subscribe(result => {
       if (!result) return;
       this.itemService.createItem(result.name, result.text1 || null, result.text2 || null).subscribe({
-        next: () => this.snackBar.open('✅ Eintrag erstellt', '', { duration: 3000 }),
+        next: () => {
+          this.snackBar.open('✅ Eintrag erstellt', '', { duration: 3000 });
+          this.itemService.loadItems();
+        },
         error: () => this.snackBar.open('Fehler beim Erstellen', 'OK', { duration: 4000, panelClass: 'snack-error' }),
       });
     });
@@ -106,7 +114,10 @@ export class ItemListComponent implements OnInit {
     ref.afterClosed().subscribe(result => {
       if (!result) return;
       this.itemService.updateItem(item.id, result.name, result.text1 || null, result.text2 || null).subscribe({
-        next: () => this.snackBar.open('✅ Änderungen gespeichert', '', { duration: 3000 }),
+        next: () => {
+          this.snackBar.open('✅ Änderungen gespeichert', '', { duration: 3000 });
+          this.itemService.loadItems();
+        },
         error: () => this.snackBar.open('Fehler beim Speichern', 'OK', { duration: 4000, panelClass: 'snack-error' }),
       });
     });
@@ -120,7 +131,10 @@ export class ItemListComponent implements OnInit {
     ref.afterClosed().subscribe(confirmed => {
       if (!confirmed) return;
       this.itemService.deleteItem(item.id).subscribe({
-        next: () => this.snackBar.open('🗑 Eintrag gelöscht', '', { duration: 3000 }),
+        next: () => {
+          this.snackBar.open('🗑 Eintrag gelöscht', '', { duration: 3000 });
+          this.itemService.loadItems();
+        },
         error: () => this.snackBar.open('Fehler beim Löschen', 'OK', { duration: 4000, panelClass: 'snack-error' }),
       });
     });

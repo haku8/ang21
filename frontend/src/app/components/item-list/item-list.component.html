@@ -5,7 +5,7 @@
     <mat-icon class="toolbar-icon">dataset</mat-icon>
     <span class="toolbar-title">Datenverwaltung</span>
     <span class="spacer"></span>
-    <mat-chip class="count-chip">{{ totalCount }} Einträge</mat-chip>
+    <mat-chip class="count-chip">{{ totalCount() }} Einträge</mat-chip>
     <button mat-flat-button class="new-btn" (click)="openCreate()">
       <mat-icon>add</mat-icon> Neu
     </button>
@@ -24,7 +24,7 @@
     </div>
 
     <!-- Loading -->
-    @if (loading) {
+    @if (loading()) {
       <div class="loading-center">
         <mat-spinner diameter="48"></mat-spinner>
         <p>Daten werden geladen…</p>
@@ -32,7 +32,7 @@
     }
 
     <!-- Table -->
-    @if (!loading) {
+    @if (!loading()) {
       <div class="table-container mat-elevation-z2">
         <table mat-table [dataSource]="dataSource" matSort class="data-table">
 

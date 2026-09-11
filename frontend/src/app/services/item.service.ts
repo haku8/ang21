@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, signal, computed } from '@angular/core';
 import { Apollo } from 'apollo-angular';
 import { Observable, map } from 'rxjs';
 import { Item } from '../models/item.model';
@@ -11,17 +11,41 @@ import {
 
 @Injectable({ providedIn: 'root' })
 export class ItemService {
+  private items = signal<Item[]>([]);
+  private loading = signal(true);
+  private error = signal<string | null>(null);
+
+  itemsSignal = this.items.asReadonly();
+  loadingSignal = this.loading.asReadonly();
+  errorSignal = this.error.asReadonly();
+  totalCount = computed(() => this.items().length);
+
   constructor(private apollo: Apollo) {}
 
   getItems(): Observable<Item[]> {
     // @ts-ignore
-      return this.apollo
+    return this.apollo
       .watchQuery<{ items: Item[] }>({ query: GET_ITEMS })
-      .valueChanges.pipe(map(result =>
+      .valueChanges.pipe(
+        map(result => result.data!.items)
+      );
+  }
 
-          result.data!.items
-
-         ));
+  loadItems(): void {
+    this.loading.set(true);
+    this.error.set(null);
+    
+    this.getItems().subscribe({
+      next: items => {
+        this.items.set(items);
+        this.loading.set(false);
+      },
+      error: err => {
+        console.error(err);
+        this.error.set('Fehler beim Laden der Daten');
+        this.loading.set(false);
+      },
+    });
   }
 
   createItem(name: string, text1: string | null, text2: string | null): Observable<Item> {

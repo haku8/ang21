@@ -5,42 +5,6 @@ Vollständige CRUD-Anwendung mit:
 - **Backend**: Node.js + Express + Apollo GraphQL
 - **Datenbank**: MariaDB
 
----
-
-## 🗂 Projektstruktur
-
-```
-app/
-├── backend/         # Node.js + Apollo GraphQL Server
-│   ├── src/
-│   │   ├── index.js      # Server-Einstiegspunkt
-│   │   ├── db.js         # MariaDB-Verbindung + Tabellen-Init
-│   │   ├── schema.js     # GraphQL Type Definitions
-│   │   └── resolvers.js  # GraphQL Resolver (CRUD)
-│   ├── .env.example
-│   └── package.json
-│
-└── frontend/        # Angular 21 App
-    ├── src/app/
-    │   ├── components/
-    │   │   ├── item-list/        # Hauptansicht (Tabelle + Filter)
-    │   │   ├── item-form/        # Formular-Dialog (Erstellen/Bearbeiten)
-    │   │   └── confirm-dialog/   # Lösch-Bestätigung
-    │   ├── graphql/
-    │   │   └── item.graphql.ts   # GQL Queries & Mutations
-    │   ├── models/
-    │   │   └── item.model.ts     # TypeScript Interface
-    │   ├── services/
-    │   │   └── item.service.ts   # Apollo-Service (CRUD)
-    │   ├── app.config.ts         # Apollo Provider Setup
-    │   └── app.routes.ts
-    └── package.json
-```
-
----
-
-## ⚡ Schnellstart
-
 ### 1. Voraussetzungen
 
 - Node.js 20+
@@ -91,6 +55,9 @@ npm start
 ## 🗄 Datenbankschema
 
 ```sql
+CREATE DATABASE myappdb;
+USE myappdb;
+
 CREATE TABLE items (
   id        INT AUTO_INCREMENT PRIMARY KEY,
   name      VARCHAR(255) NOT NULL,
@@ -148,6 +115,21 @@ mutation {
 
 ---
 
+## ✨ Features
+
+| Feature | Beschreibung |
+|---|---|
+| 📋 Übersichtstabelle | Sortierbar, paginiert, mit Volltextsuche |
+| ➕ Erstellen | Dialog mit Reactive Form + Validierung |
+| ✏️ Bearbeiten | Felder vorausgefüllt, nur geänderte Felder werden gesendet |
+| 🗑 Löschen | Bestätigungsdialog vor dem Löschen |
+| 🔔 Feedback | Snackbar-Benachrichtigungen bei Erfolg/Fehler |
+| 📱 Responsive | Mobile-optimiertes Layout |
+
+---
+
+## 🔧 Konfiguration
+
 ### Backend API URL ändern (frontend)
 
 In `src/app/app.config.ts`:
@@ -155,3 +137,13 @@ In `src/app/app.config.ts`:
 ```typescript
 link: httpLink.create({ uri: 'http://IHR-SERVER:4000/graphql' }),
 ```
+
+### Felder erweitern
+
+1. **Backend** – `src/schema.js`: Felder zu `Item` type und Mutations hinzufügen  
+2. **Backend** – `src/resolvers.js`: SQL-Queries anpassen  
+3. **Backend** – `src/db.js`: `CREATE TABLE` um Spalte erweitern  
+4. **Frontend** – `models/item.model.ts`: Interface erweitern  
+5. **Frontend** – `graphql/item.graphql.ts`: Queries/Mutations erweitern  
+6. **Frontend** – `item-form.component.html/.ts`: Formularfeld hinzufügen  
+7. **Frontend** – `item-list.component.html/.ts`: Tabellenspalte hinzufügen  
