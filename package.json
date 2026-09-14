@@ -1,0 +1,10 @@
+{
+  "name": "project",
+  "version": "0.0.0",
+  "scripts": {
+	  "dev": "concurrently \"npm run dev --prefix backend\" \"npm run start --prefix frontend\" "
+  },
+  "devDependencies": {
+    "concurrently": "^10.0.5"
+  }
+}
